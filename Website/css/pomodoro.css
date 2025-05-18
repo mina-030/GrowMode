@@ -1,0 +1,46 @@
+.pomodoro-app {
+    text-align: center;
+    margin-bottom: 40px;
+}  
+
+.pomodoro-app .title{
+    font-size: 60px;
+    margin-top: 60px;
+    margin-bottom: 10px;
+    color: #67595E;
+}
+
+.pomodoro-app .timer{
+    font-size: 90px;
+    color: #67595E;
+    margin-bottom: 20px;
+}
+
+.pomodoro-app button{
+    font-size: 18px;
+    padding: 10px 20px;
+    margin: 10px;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: opacity .3s
+    ease-in-out;
+}
+
+.pomodoro-app button:hover{
+    opacity: .7;
+}
+
+#start{
+    background-color: var(--start-color);
+}
+
+#stop{
+    background-color: var(--stop-color);
+}
+
+#reset{
+    background-color: var(--reset-color);
+}
