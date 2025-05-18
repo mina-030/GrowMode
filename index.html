@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>GrowMode</title>
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/pomodoro.css">
+        <link rel="stylesheet" href="css/tasklist.css">
+        <link rel="stylesheet" href="css/themes.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap">
+
+    </head>
+    
+    <body>
+        <div class="container">
+
+            <!-- Pomodoro Timer -->
+            <div class="pomodoro-app">
+                <h2 class="title">Pomodoro Timer</h2>
+                <p class="timer" id="timer">25:00</p>
+                <div class="buttonWrapper">
+                    <button id="start">Start</button>
+                    <button id="stop">Stop</button>
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+    
+            
+            <!-- To Do App -->
+            <div class="task-app toDoApp">
+                <h2 class="title">To Do List</h2>
+                <div class="row">
+                    <input type="text" id="input-box" placeholder="Add your text">
+                    <button onclick="addTask()">Add</button>
+                </div>
+                <ul id="list-container"></ul>
+            </div>
+        </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/pomodoro.js"></script>
+    <script src="js/tasklist.js"></script>
+    </body>
+</html>
