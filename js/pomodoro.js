@@ -14,6 +14,7 @@ function updateTimer(){
     timer.innerHTML = formattedTime;
 }
 
+// The Start Timer Function
 function startTimer(){
     if (interval) return; //prevent multiple intervals
     interval = setInterval(()=>{
@@ -28,10 +29,14 @@ function startTimer(){
         }
     }, 1000)
 }
+
+// The Stop Timer Function
 function stopTimer(){
     clearInterval(interval);
     interval = null;
 }
+
+// The Reset Timer Function
 function resetTimer(){
     clearInterval(interval);
     interval = null;
@@ -39,6 +44,7 @@ function resetTimer(){
     updateTimer();
 }
 
+// Will active when the button is clicked
 start.addEventListener("click", startTimer);
 stop.addEventListener("click", stopTimer);
 reset.addEventListener("click", resetTimer);

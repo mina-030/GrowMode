@@ -2,7 +2,7 @@ const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 
 
-//task list
+//Function to add a new task to the list
 function addTask() {
     if(inputBox.value === ''){
         alert("You must write something!");
@@ -19,6 +19,7 @@ function addTask() {
     saveData();
 }
 
+//Event Listener to handle task completion toggle and deletion 
 listContainer.addEventListener("click", function(e){
     if(e.target.tagName === "LI"){
         e.target.classList.toggle("checked");
