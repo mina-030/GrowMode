@@ -85,25 +85,14 @@
 }
 
 .task-app ul li.checked::before{
-    content: '';
-    position: absolute;
-    background-color: #000;
-    height: 2px;
-    width: 6px;
-    transform: rotate(45deg);
-    top: 19px;
-    left: 8px;
-}
-
-.task-app ul li.checked::after{
-    content: '';
-    position: absolute;
-    background-color: #000;
-    height: 2px;
-    width: 15px;
-    transform: rotate(-45deg);
-    top: 20px;
-    left: 12px;
+    content: '✓';
+    font-size: 20px;
+    font-weight: 900;
+    color: black;
+    background-color: var(--checked);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .task-app ul li span{
