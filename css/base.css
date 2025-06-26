@@ -6,7 +6,7 @@
 }
 
 body {
-    color: var(--text-color);
+    color: var(--timer-text);
     background-color: var(--bg-color);
 }
 
