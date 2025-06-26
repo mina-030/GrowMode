@@ -66,26 +66,44 @@
     position: relative;
 }
 
-.task-app ul li::before{
-    content: '';
-    position: absolute;
-    height: 28px;
-    width: 28px;
-    border-radius: 50%;
-    background-image: url(../images/unchecked.png);
-    background-size: cover;
-    background-position: center;
-    top: 12px;
-    left: 8px;
+.task-app ul li::before {
+  content: '';
+  position: absolute;
+  height: 23px;
+  width: 23px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 3px solid grey ;
+  background-size: cover;
+  background-position: center;
+  top: 7px;
+  left: 8px;
 }
 
 .task-app ul li.checked{
-    color: #555;
     text-decoration: line-through;
 }
 
 .task-app ul li.checked::before{
-    background-image: url(../images/checked.png);
+    content: '';
+    position: absolute;
+    background-color: #000;
+    height: 2px;
+    width: 6px;
+    transform: rotate(45deg);
+    top: 19px;
+    left: 8px;
+}
+
+.task-app ul li.checked::after{
+    content: '';
+    position: absolute;
+    background-color: #000;
+    height: 2px;
+    width: 15px;
+    transform: rotate(-45deg);
+    top: 20px;
+    left: 12px;
 }
 
 .task-app ul li span{
