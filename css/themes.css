@@ -1,14 +1,32 @@
-:root {
+:root.pink-theme{
     --bg-color: #F9F1F0;
     --primary-color: #F79489;
     --text-color: #333;
-    --button-bg: #3B0404;
     --button-text: #fff;
     --checked: #f79489;
+
+    --timer-text:#67595E;
+    --button-text: #fff;
   
     --start-color: #DE847B;
     --stop-color: #3B0404;
     --reset-color: #7f8c8d;
     --rest-color: #B9D8E1;
   }
+
+:root.blue-theme{
+    --bg-color: #D6EBF3;
+    --primary-color: #629BB5;
+    --text-color: #333;
+    --button-text: #fff;
+    --checked: #B9DBE1;
+
+    --timer-text:#333;
+    --button-text: #fff;
+  
+    --start-color: #0A1931;
+    --stop-color: #1A3D63;
+    --reset-color: #4A7FA7;
+    --rest-color: #B9D8E1;
+}
   
