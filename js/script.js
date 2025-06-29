@@ -1,3 +1,23 @@
+// Sidebar Functions
+
+const toggleButton = document.getElementById('toggle-btn');
+const sidebar = document.getElementById('sidebar');
+
+function toggleSidebar() {
+    sidebar.classList.toggle('close');
+    toggleButton.classList.toggle('rotate');
+}
+
+
+
+
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+// Podomoro Timer Functions
+
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
 const reset = document.getElementById("reset");
@@ -83,3 +103,47 @@ start.addEventListener("click", startTimer);
 stop.addEventListener("click", stopTimer);
 reset.addEventListener("click", resetTimer);
 rest.addEventListener("click", restMode);
+
+// ---------------------------------------------------------------------------------------------------------------------
+//Task List Functinos
+const inputBox = document.getElementById("input-box");
+const listContainer = document.getElementById("list-container");
+
+
+//Function to add a new task to the list
+function addTask() {
+    if(inputBox.value === ''){
+        alert("You must write something!");
+    }
+    else{
+        let li = document.createElement("li");
+        li.innerHTML = inputBox.value;
+        listContainer.appendChild(li);
+        let span = document.createElement("span");
+        span.innerHTML = "\u00d7";
+        li.appendChild(span);
+    }
+    inputBox.value = "";
+    saveData();
+}
+
+//Event Listener to handle task completion toggle and deletion 
+listContainer.addEventListener("click", function(e){
+    if(e.target.tagName === "LI"){
+        e.target.classList.toggle("checked");
+        saveData();
+    }
+    else if(e.target.tagName === "SPAN"){
+        e.target.parentElement.remove();
+        saveData();
+    }
+}, false);
+
+function saveData(){
+    localStorage.setItem("data", listContainer.innerHTML);
+}
+
+function showTask(){
+    listContainer.innerHTML = localStorage.getItem("data")
+}
+showTask();

@@ -17,7 +17,9 @@
             <ul>
                 <li class="sidebar-header">
                     <span class="logo">GrowMode</span>
-                    <button id="toggle-btn"><ion-icon name="chevron-back-outline"></ion-icon></button>
+                    <button onclick=toggleSidebar() id="toggle-btn">
+                        <ion-icon name="chevron-back-outline"></ion-icon>
+                    </button>
                 </li>
                 <li>
                     <button class="menu-btn">
@@ -29,6 +31,12 @@
                     <button class="menu-btn">
                         <ion-icon name="body-outline"></ion-icon>
                         <span>Goal</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="menu-btn">
+                        <ion-icon name="barbell-outline"></ion-icon>
+                        <span>Tool</span>
                     </button>
                 </li>
                 <li>
@@ -68,8 +76,6 @@
         </main>
 
     <script src="js/script.js"></script>
-    <script src="js/pomodoro.js"></script>
-    <script src="js/tasklist.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
