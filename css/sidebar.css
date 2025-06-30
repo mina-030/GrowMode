@@ -1,0 +1,101 @@
+#sidebar {
+    box-sizing: border-box;
+    height: 100vh;
+    width: 190px;
+    padding: 5px 1em;
+    background-color: var(--bg-color);
+    border-right: 1px solid #B9D8E1;
+
+    position: sticky; /*keep the sidebar in the same place*/
+    top: 0;
+    align-self: start;
+    transition: 300ms ease-in-out;
+    overflow: hidden;
+    text-wrap: nowrap;
+}
+
+#sidebar.close {
+    padding: 5px;
+    width: 63px;
+}
+
+#sidebar.close .sidebar-header span {
+    display: none;
+}
+
+#sidebar ul {
+    list-style: none;
+}
+
+#sidebar li {
+    margin-bottom: 1em;
+}
+
+#sidebar ion-icon {
+    font-size: 1.2em;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5em;
+    flex-shrink: 0;
+}
+
+#sidebar .sun-menu a{
+    padding-left: 2em;
+}
+
+#toggle-btn {
+    margin-left: auto;
+    padding: 1em;
+    border: none;
+    border-radius: .5em;
+    background: none;
+    cursor: pointer;
+}
+
+#toggle-btn ion-icon {
+    transition: transform 150ms ease, background-color 150ms ease;
+}
+
+#toggle-btn ion-icon:hover {
+    background-color: #acd1ee;
+}
+
+#toggle-btn.rotate ion-icon {
+    transform: rotate(-90deg);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2em;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.menu-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    font: inherit;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.75em 1em;
+    border-radius: 0.5em;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.menu-btn:hover {
+    background-color: #acd1ee;
+}
+
+ion-icon {
+    font-size: 1.2em;
+}
