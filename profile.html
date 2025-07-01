@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="blue-theme">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Profile</title>
+        <link rel="stylesheet" href="css/profile.css">
+        <link rel="stylesheet" href="css/themes.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+</html>
+
+<body>
+    <nav id="sidebar">
+        <ul>
+            <li class="sidebar-header">
+                <span class="logo">GrowMode</span>
+                <button onclick=toggleSidebar() id="toggle-btn">
+                    <ion-icon name="chevron-back-outline"></ion-icon>
+                </button>
+            </li>
+            <li>
+                <button class="menu-btn">
+                    <ion-icon name="contrast-outline"></ion-icon>
+                    <span>Mode</span>
+                </button>
+            </li>
+            <li>
+                <a href="profile.html" class="menu-btn">
+                    <ion-icon name="body-outline"></ion-icon>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <button class="menu-btn">
+                    <ion-icon name="barbell-outline"></ion-icon>
+                    <span>Tool</span>
+                </button>
+            </li>
+            <li>
+                <button class="menu-btn">
+                    <ion-icon name="settings-outline"></ion-icon>
+                    <span>Setting</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="profile-container">
+            <img src="profile.png" alt="Mina's profile avatar" class="avatar">
+
+            <div>
+                <h1 id="name">mina</h1>
+                <p id="tag">@mina030</p>
+                <p id="description">Hello there!</p>
+            <div>
+        </div>
+
+        <div class="longTerm-goal">
+            <h2>Long Term Goal</h2>
+            <p>Get a job</p>
+        </div>
+
+        <div class="shortTerm-goal">
+            <h2>Short Term Goal</h2>
+            <p>Study leetCode</p>
+        </div>
+
+        <div class="calendar">
+        </div>
+
+        <div class="activites">
+            <h2>Activity</h2>
+            <p>June 2025</p>
+            <p>Finished 10 tasks</p>
+        </div>
+    </main>
+</body>
