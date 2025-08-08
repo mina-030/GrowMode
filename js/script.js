@@ -1,23 +1,22 @@
+// ===================
 // Sidebar Functions
+// ===================
 
 const toggleButton = document.getElementById('toggle-btn');
 const sidebar = document.getElementById('sidebar');
 
 function toggleSidebar() {
-    sidebar.classList.toggle('close');
-    toggleButton.classList.toggle('rotate');
+    if (sidebar) sidebar.classList.toggle('close');
+    if (toggleButton) toggleButton.classList.toggle('rotate');
 }
 
+if (toggleButton) {
+    toggleButton.addEventListener("click", toggleSidebar)
+}
 
-
-
-
-
-
-
-// ----------------------------------------------------------------------------------------------------------------------------------
-// Podomoro Timer Functions
-
+// ===========================
+// Pomodoro Timer Functions
+// ===========================
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
 const reset = document.getElementById("reset");
@@ -26,15 +25,14 @@ const rest = document.getElementById("rest");
 
 let isRestMode = false;
 let interval;
-let timeLeft = 1500; /* base on second, so if 25min = 1500s */
+let timeLeft = 1500; /* base on second, so 25min = 1500s */
 
 // Update the timer display
 function updateTimer(){
-    let minutes = Math.floor(timeLeft/60);
-    let seconds = timeLeft % 60;
-    let formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-    timer.innerHTML = formattedTime;
+    if (!timer) return;
+    const minutes = Math.floor(timeLeft/60);
+    const seconds = timeLeft % 60;
+    timer.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
 //Set time based on mode
@@ -49,7 +47,7 @@ function startTimer(){
     interval = setInterval(()=>{
         timeLeft--;
         updateTimer();
-        if (timeLeft === 0) {
+        if (timeLeft <= 0) {
             clearInterval(interval);
             interval = null; //clear the interval reference
             alert("Time's up!");
@@ -71,19 +69,19 @@ function resetTimer(){
     correctTime();
 }
 
-let title = document.querySelector(".title");
-let switchButtom = document.getElementById("rest");
+const title = document.querySelector(".title");
+const switchButton = document.getElementById("rest");
 
 // The Rest Mode On Function
 function restMode() {
     isRestMode = true;
     correctTime();
 
-    title.innerText = "Take a breath";
-    switchButtom.innerText = "Work";
+    if (title) title.innerText = "Take a breath";
+    if (switchButton) switchButton.innerText = "Work";
 
-    switchButtom.removeEventListener("click", restMode);
-    switchButtom.addEventListener("click", studyMode);
+    switchButton?.removeEventListener("click", restMode);
+    switchButton?.addEventListener("click", studyMode);
 }
 
 // The Study Mode On Function
@@ -91,59 +89,82 @@ function studyMode() {
     isRestMode = false;
     correctTime();
 
-    title.innerText = "Working";
-    switchButtom.innerText = "Rest";
+    if (title) title.innerText = "Working";
+    if (switchButton) switchButton.innerText = "Rest";
 
-    switchButtom.removeEventListener("click", studyMode);
-    switchButtom.addEventListener("click", restMode);
+    switchButton?.removeEventListener("click", studyMode);
+    switchButton?.addEventListener("click", restMode);
 }
 
 // Will active when the button is clicked
-start.addEventListener("click", startTimer);
-stop.addEventListener("click", stopTimer);
-reset.addEventListener("click", resetTimer);
-rest.addEventListener("click", restMode);
+if (start) start.addEventListener("click", startTimer);
+if (stop) stop.addEventListener("click", stopTimer);
+if (reset) reset.addEventListener("click", resetTimer);
+if (rest) rest.addEventListener("click", restMode);
 
-// ---------------------------------------------------------------------------------------------------------------------
-//Task List Functinos
+// =====================
+// Task List Functinos
+// =====================
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 
 
 //Function to add a new task to the list
 function addTask() {
-    if(inputBox.value === ''){
+    if(!inputBox || !listContainer) return;
+
+    const value = inputBox.value.trim();
+    if (value === '') {
         alert("You must write something!");
+        return
     }
-    else{
-        let li = document.createElement("li");
-        li.innerHTML = inputBox.value;
-        listContainer.appendChild(li);
-        let span = document.createElement("span");
-        span.innerHTML = "\u00d7";
-        li.appendChild(span);
+
+    //Prevent duplicate tasks
+    const isDuplicate = [...listContainer.querySelectorAll("li")].some(li => li.firstChild?.nodeValue === value);
+    if (isDuplicate) {
+        alert("That task already exists.");
+        return;
     }
+
+    const li = document.createElement("li");
+    li.textContent = value;
+
+    const span = document.createElement("span");
+    span.textContent = "\u00d7";
+    li.appendChild(span);
+
+    listContainer.appendChild(li);
+
     inputBox.value = "";
     saveData();
 }
 
+inputBox?.addEventListener("keydown", e => {
+    if (e.key === "Enter") addTask();
+});
+
 //Event Listener to handle task completion toggle and deletion 
-listContainer.addEventListener("click", function(e){
-    if(e.target.tagName === "LI"){
-        e.target.classList.toggle("checked");
-        saveData();
-    }
-    else if(e.target.tagName === "SPAN"){
-        e.target.parentElement.remove();
-        saveData();
-    }
-}, false);
+if (listContainer){
+    listContainer.addEventListener("click", (e) => {
+        if(e.target.tagName === "LI"){
+            e.target.classList.toggle("checked");
+            saveData();
+        }
+        else if(e.target.tagName === "SPAN"){
+            e.target.parentElement.remove();
+            saveData();
+        }
+    }, false);
+}
+
 
 function saveData(){
+    if (!listContainer) return;
     localStorage.setItem("data", listContainer.innerHTML);
 }
 
 function showTask(){
+    if (!listContainer) return;
     listContainer.innerHTML = localStorage.getItem("data")
 }
 showTask();
