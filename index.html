@@ -69,6 +69,30 @@
                 <h2 class="title">To Do List</h2>
                 <div class="row">
                     <input type="text" id="input-box" placeholder="Add your text">
+
+                    <div class="priority-container">
+                        <button id="priority-toggle" class="priority-icon">⭐</button>
+                        <div id="priority-options" class="priority-box hidden">
+                            <label>
+                                <input type="radio" name="priority" value="urgent">
+                                Urgent and important
+                            </label>
+                            <label>
+                                <input type="radio" name="priority" value="high">
+                                Important and not urgent
+                            </label>
+                            <label>
+                                <input type="radio" name="priority" value="medium">
+                                Urgent but not important
+                            </label>
+                            <label>
+                                <input type="radio" name="priority" value="low">
+                                Not urgent and not important
+                            </label>
+                        </div>
+                    </div>
+
+                    <input type="date" id="due-date">
                     <button onclick="addTask()">Add</button>
                 </div>
                 <ul id="list-container"></ul>
