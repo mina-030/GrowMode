@@ -134,7 +134,7 @@ button{
     outline: none;
     background: transparent;
     padding: 10px;
-    font-weight: 14px;
+    font-size: 14px;
 }
 
 /* this selects all button elements */
@@ -212,6 +212,20 @@ button{
   padding: 10px;
   font-weight: 14px;
 }
+
+.task-app ul li .badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.badge-urgent { background-color: #d32f2f; }
+.badge-high   { background-color: #f57c00; }
+.badge-medium { background-color: #1976d2; }
+.badge-low    { background-color: #388e3c; }
 
 .task-app ul li .due {
   font-size: 12px;

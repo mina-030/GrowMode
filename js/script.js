@@ -109,12 +109,28 @@ if (rest) rest.addEventListener("click", restMode);
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 const dueInput = document.getElementById("due-date");
+const priorityToggle = document.getElementById("priority-toggle")
+const priorityOptions = document.getElementById("priority-options")
+
+function getSelectedPriority(){
+  const checked = document.querySelector('input[name="priority"]:checked');
+  return checked ? checked.value : "";
+}
+
+function createPriorityBadge(priority){
+  if (!priority) return null;
+  const span = document.createElement("span");
+  span.className = `badge badge-${priority}`;
+  span.textContent = priority;
+  return span;
+}
 
 function addTask() {
   if (!inputBox || !listContainer) return;
 
   const text = inputBox.value.trim();
   const due = dueInput?.value || ""; // YYYY-MM-DD
+  const priority = getSelectedPriority();
 
   if (text === "") {
     alert("You must write something!");
@@ -135,12 +151,19 @@ function addTask() {
   const li = document.createElement("li");
   li.appendChild(document.createTextNode(text));
 
-  // due label as <time> so it doesn't trigger delete
+  // priority badge
+  if (priority) {
+    li.setAttribute("data-priority", priority);
+    const badge = createPriorityBadge(priority);
+    if (badge) li.appendChild(badge);
+  }
+
+  // due label as <time>
   if (due) {
     li.setAttribute("data-due", due);
     const dueTag = document.createElement("time");
     dueTag.className = "due";
-    dueTag.dateTime = due; // semantic HTML
+    dueTag.dateTime = due;
     const dueDate = new Date(due + "T00:00:00").toLocaleDateString();
     dueTag.textContent = ` (due ${dueDate})`;
     li.appendChild(dueTag);
@@ -156,6 +179,10 @@ function addTask() {
 
   inputBox.value = "";
   if (dueInput) dueInput.value = "";
+  // clear selected priority
+  const checked = document.querySelector('input[name="priority"]:checked');
+  if (checked) checked.checked = false;
+  if (priorityOptions) priorityOptions.classList.add("hidden");
 
   sortTasksByDueDate();
   refreshDueStyles();
@@ -167,15 +194,16 @@ inputBox?.addEventListener("keydown", e => {
   if (e.key === "Enter") addTask();
 });
 
-// Update the click handler so only the delete button removes the item
+// Update list click handler
 if (listContainer){
   listContainer.addEventListener("click", (e) => {
-    if (e.target.tagName === "LI") {
-      e.target.classList.toggle("checked");
+    const target = e.target;
+    if (target.tagName === "LI") {
+      target.classList.toggle("checked");
       refreshDueStyles();
       saveData();
-    } else if (e.target.classList.contains("delete")) {
-      e.target.parentElement.remove();
+    } else if (target.classList.contains("delete")) {
+      target.parentElement.remove();
       saveData();
     }
   }, false);
@@ -198,26 +226,19 @@ function refreshDueStyles() {
 
 function sortTasksByDueDate() {
   if (!listContainer) return;
-
-  // Convert NodeList to array for sorting
   const tasks = Array.from(listContainer.querySelectorAll("li"));
 
   tasks.sort((a, b) => {
     const dueA = a.getAttribute("data-due") || "";
     const dueB = b.getAttribute("data-due") || "";
 
-    // No due date goes on top
     if (!dueA && dueB) return -1;
     if (dueA && !dueB) return 1;
-
-    // If both have no due date, keep original order
     if (!dueA && !dueB) return 0;
 
-    // Compare by date (earliest first)
     return new Date(dueA) - new Date(dueB);
   });
 
-  // Clear list and append sorted tasks
   listContainer.innerHTML = "";
   tasks.forEach(task => listContainer.appendChild(task));
 }
@@ -225,6 +246,16 @@ function sortTasksByDueDate() {
 function showTask(){
   if (!listContainer) return;
   listContainer.innerHTML = localStorage.getItem("data") || "";
+
+  // rehydrate: add missing badges based on data-priority
+  [...listContainer.querySelectorAll("li")].forEach(li => {
+    const priority = li.getAttribute("data-priority");
+    if (priority && !li.querySelector(".badge")) {
+      const badge = createPriorityBadge(priority);
+      if (badge) li.insertBefore(badge, li.querySelector(".due") || li.querySelector(".delete"));
+    }
+  });
+
   sortTasksByDueDate();
   refreshDueStyles();
 }
@@ -236,13 +267,15 @@ function saveData(){
 
 showTask();
 
-// priorities options
-const priorityToggle = document.getElementById("priority-toggle")
-const priorityOptions = document.getElementById("priority-options")
-
+// priorities UI
 if (priorityToggle && priorityOptions) {
   priorityToggle.addEventListener("click", () => {
     priorityOptions.classList.toggle("hidden");
+  });
+
+  priorityOptions.addEventListener("change", () => {
+    // close when selecting a priority
+    priorityOptions.classList.add("hidden");
   });
 }
 
