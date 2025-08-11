@@ -102,69 +102,144 @@ if (stop) stop.addEventListener("click", stopTimer);
 if (reset) reset.addEventListener("click", resetTimer);
 if (rest) rest.addEventListener("click", restMode);
 
-// =====================
+// =======================================================================
 // Task List Functinos
-// =====================
+// =======================================================================
+
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
+const dueInput = document.getElementById("due-date");
 
-
-//Function to add a new task to the list
 function addTask() {
-    if(!inputBox || !listContainer) return;
+  if (!inputBox || !listContainer) return;
 
-    const value = inputBox.value.trim();
-    if (value === '') {
-        alert("You must write something!");
-        return
-    }
+  const text = inputBox.value.trim();
+  const due = dueInput?.value || ""; // YYYY-MM-DD
 
-    //Prevent duplicate tasks
-    const isDuplicate = [...listContainer.querySelectorAll("li")].some(li => li.firstChild?.nodeValue === value);
-    if (isDuplicate) {
-        alert("That task already exists.");
-        return;
-    }
+  if (text === "") {
+    alert("You must write something!");
+    return;
+  }
 
-    const li = document.createElement("li");
-    li.textContent = value;
+  // Prevent duplicates by (text + due)
+  const isDuplicate = [...listContainer.querySelectorAll("li")].some(li => {
+    const liText = li.firstChild?.nodeValue?.trim() || "";
+    const liDue = li.getAttribute("data-due") || "";
+    return liText === text && liDue === due;
+  });
+  if (isDuplicate) {
+    alert("That task with the same due date already exists.");
+    return;
+  }
 
-    const span = document.createElement("span");
-    span.textContent = "\u00d7";
-    li.appendChild(span);
+  const li = document.createElement("li");
+  li.appendChild(document.createTextNode(text));
 
-    listContainer.appendChild(li);
+  // due label as <time> so it doesn't trigger delete
+  if (due) {
+    li.setAttribute("data-due", due);
+    const dueTag = document.createElement("time");
+    dueTag.className = "due";
+    dueTag.dateTime = due; // semantic HTML
+    const dueDate = new Date(due + "T00:00:00").toLocaleDateString();
+    dueTag.textContent = ` (due ${dueDate})`;
+    li.appendChild(dueTag);
+  }
 
-    inputBox.value = "";
-    saveData();
+  // delete button
+  const del = document.createElement("span");
+  del.className = "delete";
+  del.textContent = "\u00d7";
+  li.appendChild(del);
+
+  listContainer.appendChild(li);
+
+  inputBox.value = "";
+  if (dueInput) dueInput.value = "";
+
+  sortTasksByDueDate();
+  refreshDueStyles();
+  saveData();
 }
 
+// Enter key adds
 inputBox?.addEventListener("keydown", e => {
-    if (e.key === "Enter") addTask();
+  if (e.key === "Enter") addTask();
 });
 
-//Event Listener to handle task completion toggle and deletion 
+// Update the click handler so only the delete button removes the item
 if (listContainer){
-    listContainer.addEventListener("click", (e) => {
-        if(e.target.tagName === "LI"){
-            e.target.classList.toggle("checked");
-            saveData();
-        }
-        else if(e.target.tagName === "SPAN"){
-            e.target.parentElement.remove();
-            saveData();
-        }
-    }, false);
+  listContainer.addEventListener("click", (e) => {
+    if (e.target.tagName === "LI") {
+      e.target.classList.toggle("checked");
+      refreshDueStyles();
+      saveData();
+    } else if (e.target.classList.contains("delete")) {
+      e.target.parentElement.remove();
+      saveData();
+    }
+  }, false);
 }
 
+function refreshDueStyles() {
+  if (!listContainer) return;
+  const today = new Date(); today.setHours(0,0,0,0);
 
-function saveData(){
-    if (!listContainer) return;
-    localStorage.setItem("data", listContainer.innerHTML);
+  [...listContainer.querySelectorAll("li")].forEach(li => {
+    const due = li.getAttribute("data-due");
+    li.classList.remove("overdue");
+    if (!due) return;
+    const dueDate = new Date(due + "T00:00:00");
+    if (dueDate < today && !li.classList.contains("checked")) {
+      li.classList.add("overdue");
+    }
+  });
+}
+
+function sortTasksByDueDate() {
+  if (!listContainer) return;
+
+  // Convert NodeList to array for sorting
+  const tasks = Array.from(listContainer.querySelectorAll("li"));
+
+  tasks.sort((a, b) => {
+    const dueA = a.getAttribute("data-due") || "";
+    const dueB = b.getAttribute("data-due") || "";
+
+    // No due date goes on top
+    if (!dueA && dueB) return -1;
+    if (dueA && !dueB) return 1;
+
+    // If both have no due date, keep original order
+    if (!dueA && !dueB) return 0;
+
+    // Compare by date (earliest first)
+    return new Date(dueA) - new Date(dueB);
+  });
+
+  // Clear list and append sorted tasks
+  listContainer.innerHTML = "";
+  tasks.forEach(task => listContainer.appendChild(task));
 }
 
 function showTask(){
-    if (!listContainer) return;
-    listContainer.innerHTML = localStorage.getItem("data")
+  if (!listContainer) return;
+  listContainer.innerHTML = localStorage.getItem("data") || "";
+  sortTasksByDueDate();
+  refreshDueStyles();
 }
 showTask();
+
+// priorities options
+const priorityToggle = document.getElementById("priority-toggle")
+const priorityOptions = document.getElementById("priority-options")
+
+priorityToggle.addEventListener("click", () => {
+  priorityOptions.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+  if (!priorityOptions.contains(e.target) && !proiorityToggle.contains(e.target)) {
+    priorityOptions.classList.add("hidden");
+  }
+});
