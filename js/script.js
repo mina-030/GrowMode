@@ -228,18 +228,50 @@ function showTask(){
   sortTasksByDueDate();
   refreshDueStyles();
 }
+
+function saveData(){
+  if (!listContainer) return;
+  localStorage.setItem("data", listContainer.innerHTML);
+}
+
 showTask();
 
 // priorities options
 const priorityToggle = document.getElementById("priority-toggle")
 const priorityOptions = document.getElementById("priority-options")
 
-priorityToggle.addEventListener("click", () => {
-  priorityOptions.classList.toggle("hidden");
-});
+if (priorityToggle && priorityOptions) {
+  priorityToggle.addEventListener("click", () => {
+    priorityOptions.classList.toggle("hidden");
+  });
+}
 
 document.addEventListener("click", (e) => {
-  if (!priorityOptions.contains(e.target) && !proiorityToggle.contains(e.target)) {
+  if (!priorityOptions || !priorityToggle) return;
+  if (!priorityOptions.contains(e.target) && !priorityToggle.contains(e.target)) {
     priorityOptions.classList.add("hidden");
   }
 });
+
+// ===========================
+// Theme toggle + persistence
+// ===========================
+(function initThemeToggle(){
+  const htmlRoot = document.documentElement; // <html>
+  const stored = localStorage.getItem("theme") || "blue";
+  htmlRoot.classList.remove("blue-theme", "pink-theme");
+  htmlRoot.classList.add(`${stored}-theme`);
+
+  // Any button with first sidebar "Mode"
+  const modeButtons = Array.from(document.querySelectorAll("#sidebar .menu-btn"));
+  const modeButton = modeButtons.find(btn => btn.querySelector("ion-icon[name='contrast-outline']"));
+  if (!modeButton) return;
+
+  modeButton.addEventListener("click", () => {
+    const isBlue = htmlRoot.classList.contains("blue-theme");
+    const next = isBlue ? "pink" : "blue";
+    htmlRoot.classList.toggle("blue-theme", next === "blue");
+    htmlRoot.classList.toggle("pink-theme", next === "pink");
+    localStorage.setItem("theme", next);
+  });
+})();

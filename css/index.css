@@ -66,8 +66,7 @@ button{
     border-radius: 40px;
     cursor: pointer;
     text-transform: uppercase;
-    transition: opacity .3s
-    ease-in-out;
+    transition: opacity .3s ease-in-out;
 }
 
 .pomodoro-app button:hover{
@@ -102,11 +101,11 @@ button{
 }
 
 /*this makes a white box*/
-.task-app .toDoApp{
+.toDoApp{
     width: 100%;
     max-width: 540px;
     background: var(--bg-color);
-    margin: 100px auto 20px; /*it is horizontally centered as we set the margin left and right side auto*/
+    margin: 100px auto 20px; /* it is horizontally centered */
     padding: 40px 30px 70px;
     border-radius: 10px;
 }
