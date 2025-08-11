@@ -94,7 +94,7 @@ button{
 
 .task-app {
     width: 100%;
-    max-width: 540px;
+    max-width: 1000px;
     background: var(--bg-color);
     margin: 100px auto 20px;
     padding: 40px 30px 70px;
@@ -174,7 +174,7 @@ button{
   left: 8px;
 }
 
-.task-app ul li.checked{
+.task-app ul li.checked {
     text-decoration: line-through;
 }
 
@@ -204,4 +204,59 @@ button{
 
 .task-app ul li span:hover{
     background: #edeef0;
+}
+
+.task-app .row input[type="date"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px;
+  font-weight: 14px;
+}
+
+.task-app ul li .due {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-left: 8px;
+}
+
+.task-app ul li.overdue:not(.checked) {
+  color: #b00020;              /* text red if overdue and not completed */
+}
+
+.task-app ul li.overdue:not(.checked)::before {
+  border-color: #b00020;       /* ring turns red too */
+}
+
+.priority-container {
+    position: relative;
+    display: inline-block;
+}
+
+.priority-icon {
+    background: transparent !important;
+    border: none;
+    padding: 0;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.priority-box {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.hidden {
+    display: none;
+}
+
+.priority-box label {
+    display: block;
+    margin: 4px 0;
 }
