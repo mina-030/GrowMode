@@ -70,27 +70,27 @@
                 <div class="row">
                     <input type="text" id="input-box" placeholder="Add your text">
 
-                    <div class="priority-container">
+                    <span class="priority-container">
                         <button id="priority-toggle" class="priority-icon">⭐</button>
                         <div id="priority-options" class="priority-box hidden">
                             <label>
                                 <input type="radio" name="priority" value="urgent">
-                                Urgent and important
+                                Urgent
                             </label>
                             <label>
                                 <input type="radio" name="priority" value="high">
-                                Important and not urgent
+                                High
                             </label>
                             <label>
                                 <input type="radio" name="priority" value="medium">
-                                Urgent but not important
+                                Medium
                             </label>
                             <label>
                                 <input type="radio" name="priority" value="low">
-                                Not urgent and not important
+                                Low
                             </label>
                         </div>
-                    </div>
+                    </span>
 
                     <input type="date" id="due-date">
                     <button onclick="addTask()">Add</button>

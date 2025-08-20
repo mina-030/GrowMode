@@ -109,12 +109,28 @@ if (rest) rest.addEventListener("click", restMode);
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 const dueInput = document.getElementById("due-date");
+const PRIORITY_WEIGHT = { urgent: 4, high: 3, medium: 2, low: 1}
+
+function priorityToStars(p) {
+  switch (p) {
+    case "urgent": return "⭐⭐⭐⭐";
+    case "high": return "⭐⭐⭐";
+    case "medium": return "⭐⭐";
+    case "low": return "⭐";
+    default: return "";
+  }
+}
+
+function getSelectedPriority() {
+  return document.querySelector('input[name="priority"]:checked')?.value || "";
+}
 
 function addTask() {
   if (!inputBox || !listContainer) return;
 
   const text = inputBox.value.trim();
   const due = dueInput?.value || ""; // YYYY-MM-DD
+  const priority = getSelectedPriority();
 
   if (text === "") {
     alert("You must write something!");
@@ -135,7 +151,7 @@ function addTask() {
   const li = document.createElement("li");
   li.appendChild(document.createTextNode(text));
 
-  // due label as <time> so it doesn't trigger delete
+  // store due date
   if (due) {
     li.setAttribute("data-due", due);
     const dueTag = document.createElement("time");
@@ -146,6 +162,15 @@ function addTask() {
     li.appendChild(dueTag);
   }
 
+  // store priority 
+  if (priority) {
+    li.setAttribute("data-priority", priority);
+    const stars = document.createElement("span");
+    stars.className = "priority-stars";
+    stars.textContent = priorityToStars(priority);
+    li.appendChild(stars);
+  }
+
   // delete button
   const del = document.createElement("span");
   del.className = "delete";
@@ -154,10 +179,14 @@ function addTask() {
 
   listContainer.appendChild(li);
 
+  // clear inputs
   inputBox.value = "";
   if (dueInput) dueInput.value = "";
+  const checked = document.querySelector('input[name="priority"]:checked');
+  if (checked) checked.checked = false;
 
   sortTasksByDueDate();
+  sortTasksByPriority();
   refreshDueStyles();
   saveData();
 }
@@ -181,6 +210,64 @@ if (listContainer){
   }, false);
 }
 
+function sortTasksByDueDate() {
+  if (!listContainer) return;
+
+  // Convert NodeList to array for sorting 
+  const tasks = Array.from(listContainer.querySelectorAll("li"));
+
+  tasks.sort((a, b) => {
+    const dueA = a.getAttribute("data-due") || "";
+    const dueB = b.getAttribute("data-due") || "";
+
+    // No due date goes on bottom
+    if (!dueA && dueB) return 1;
+    if (dueA && !dueB) return -1;
+
+    // If both have no due date, keep original order
+    if (!dueA && !dueB) return 0;
+
+    // Compare by date (earliest first)
+    return new Date(dueA) - new Date(dueB);
+  });
+
+  // Clear list and append sorted tasks
+  listContainer.innerHTML = "";
+  tasks.forEach(task => listContainer.appendChild(task));
+}
+
+function sortTasksByPriority() {
+  if (!listContainer) return;
+
+  // Convert NodeList to array for sorting
+  const all = Array.from(listContainer.querySelectorAll("li"));
+
+  // Group by date string
+  const groups = new Map();
+  for (const li of all) {
+    const key = li.getAttribute("data-due") || "";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(li);
+  }
+
+  const result = [];
+  for (const [, arr] of groups) {
+    arr.sort((a, b) => {
+      const pa = (a.getAttribute("data-priority") || "").toLowerCase();
+      const pb = (b.getAttribute("data-priority") || "").toLowerCase();
+      const wa = PRIORITY_WEIGHT[pa] || 0;
+      const wb = PRIORITY_WEIGHT[pb] || 0;
+      return wb - wa;
+    });
+
+    result.push(...arr);
+  }
+
+  // Rebuild DOM in the new order
+  listContainer.innerHTML = "";
+  result.forEach(li => listContainer.appendChild(li));
+}
+
 function refreshDueStyles() {
   if (!listContainer) return;
   const today = new Date(); today.setHours(0,0,0,0);
@@ -196,36 +283,19 @@ function refreshDueStyles() {
   });
 }
 
-function sortTasksByDueDate() {
-  if (!listContainer) return;
+// Save Data Function
+const USE_LOCAL_STORAGE = false;
 
-  // Convert NodeList to array for sorting
-  const tasks = Array.from(listContainer.querySelectorAll("li"));
-
-  tasks.sort((a, b) => {
-    const dueA = a.getAttribute("data-due") || "";
-    const dueB = b.getAttribute("data-due") || "";
-
-    // No due date goes on top
-    if (!dueA && dueB) return -1;
-    if (dueA && !dueB) return 1;
-
-    // If both have no due date, keep original order
-    if (!dueA && !dueB) return 0;
-
-    // Compare by date (earliest first)
-    return new Date(dueA) - new Date(dueB);
-  });
-
-  // Clear list and append sorted tasks
-  listContainer.innerHTML = "";
-  tasks.forEach(task => listContainer.appendChild(task));
+function saveData() {
+  if (!USE_LOCAL_STORAGE) return;
+  localStorage.setItem("data", listContainer.innerHTML);
 }
 
 function showTask(){
-  if (!listContainer) return;
+  if (!USE_LOCAL_STORAGE) return;
   listContainer.innerHTML = localStorage.getItem("data") || "";
   sortTasksByDueDate();
+  sortTasksByPriority();
   refreshDueStyles();
 }
 showTask();
@@ -234,12 +304,14 @@ showTask();
 const priorityToggle = document.getElementById("priority-toggle")
 const priorityOptions = document.getElementById("priority-options")
 
-priorityToggle.addEventListener("click", () => {
+priorityToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
   priorityOptions.classList.toggle("hidden");
 });
 
 document.addEventListener("click", (e) => {
-  if (!priorityOptions.contains(e.target) && !proiorityToggle.contains(e.target)) {
+  if (!priorityOptions) return;
+  if (!priorityOptions.contains(e.target) && !priorityToggle.contains(e.target)) {
     priorityOptions.classList.add("hidden");
   }
 });

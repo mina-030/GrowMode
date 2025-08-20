@@ -66,8 +66,7 @@ button{
     border-radius: 40px;
     cursor: pointer;
     text-transform: uppercase;
-    transition: opacity .3s
-    ease-in-out;
+    transition: opacity .3s ease-in-out;
 }
 
 .pomodoro-app button:hover{
@@ -102,11 +101,11 @@ button{
 }
 
 /*this makes a white box*/
-.task-app .toDoApp{
+.toDoApp{
     width: 100%;
-    max-width: 540px;
+    max-width: 900px;
     background: var(--bg-color);
-    margin: 100px auto 20px; /*it is horizontally centered as we set the margin left and right side auto*/
+    margin: 100px auto 20px; 
     padding: 40px 30px 70px;
     border-radius: 10px;
 }
@@ -135,7 +134,7 @@ button{
     outline: none;
     background: transparent;
     padding: 10px;
-    font-weight: 14px;
+    font-size: 14px;
 }
 
 /* this selects all button elements */
@@ -189,7 +188,7 @@ button{
     justify-content: center;
 }
 
-.task-app ul li span{
+.task-app ul li .delete{
     position: absolute;
     right: 0;
     top: 5px;
@@ -202,7 +201,7 @@ button{
     border-radius: 50%;
 }
 
-.task-app ul li span:hover{
+.task-app ul li .delete:hover{
     background: #edeef0;
 }
 
@@ -213,6 +212,20 @@ button{
   padding: 10px;
   font-weight: 14px;
 }
+
+.task-app ul li .badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.stars-urgent {background-color: #d32f2f;}
+.stars-high {background-color: #f57c00;}
+.stars-medium {background-color: #1976d2;}
+.stars-low {background-color: #388e3c;}
 
 .task-app ul li .due {
   font-size: 12px;
@@ -243,13 +256,15 @@ button{
 
 .priority-box {
     position: absolute;
-    top: 25px;
+    top: -175%;
     left: 0;
     background: white;
     border: 1px solid #ccc;
     padding: 8px;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .hidden {
@@ -259,4 +274,15 @@ button{
 .priority-box label {
     display: block;
     margin: 4px 0;
+}
+
+.priority-stars {
+    position: static;
+    display: inline;
+    margin-left: 8px;
+    width: auto;
+    height: auto;
+    line-height: normal;
+    font-size: 14px;
+    color: gold;
 }
