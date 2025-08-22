@@ -315,3 +315,23 @@ document.addEventListener("click", (e) => {
     priorityOptions.classList.add("hidden");
   }
 });
+
+document.getElementById('gen-report').addEventListener('click', async() => {
+  const payload = {
+    name: 'Mina',
+    total_time: 600,
+    total_rest: 120,
+    total_task: 12,
+    total_star: 20
+  };
+
+  const res = await fetch('http://127.0.0.1:8000/report', {
+    method: 'POST',
+    headers: {'Content-Type' : 'application/json'},
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  document.getElementById('report-summary').textContent = data.summary;
+  document.getElementById('report-quote').textContent = data.quote;
+});
