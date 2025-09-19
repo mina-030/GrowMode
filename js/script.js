@@ -1,6 +1,6 @@
-// ===================
+// ======================================================================================================================
 // Sidebar Functions
-// ===================
+// ======================================================================================================================
 
 const toggleButton = document.getElementById('toggle-btn');
 const sidebar = document.getElementById('sidebar');
@@ -14,18 +14,24 @@ if (toggleButton) {
     toggleButton.addEventListener("click", toggleSidebar)
 }
 
-// ===========================
+// ======================================================================================================================
 // Pomodoro Timer Functions
-// ===========================
+// ======================================================================================================================
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
 const reset = document.getElementById("reset");
 const timer = document.getElementById("timer");
-const rest = document.getElementById("rest");
+const switchButton = document.getElementById("rest");
+const title = document.querySelector(".title");
+const alarmSound = new Audio('alarm.m4a');
+
+// Durations (seconds)
+const WORK_SECONDS = 1500; // 25 mins
+const REST_SECONDS = 300; // 5 mins
 
 let isRestMode = false;
 let interval;
-let timeLeft = 1500; /* base on second, so 25min = 1500s */
+let timeLeft = WORK_SECONDS; 
 
 // Update the timer display
 function updateTimer(){
@@ -37,7 +43,7 @@ function updateTimer(){
 
 //Set time based on mode
 function correctTime() {
-    timeLeft = isRestMode? 300 : 1500;
+    timeLeft = isRestMode? REST_SECONDS : WORK_SECONDS;
     updateTimer();
 }
 
@@ -47,11 +53,13 @@ function startTimer(){
     interval = setInterval(()=>{
         timeLeft--;
         updateTimer();
-        if (timeLeft <= 0) {
+        if (timeLeft < 0) {
             clearInterval(interval);
             interval = null; //clear the interval reference
+            alarmSound.play();
             alert("Time's up!");
-            correctTime();
+            switchMode();
+            return;
         }
     }, 1000);
 }
@@ -68,9 +76,6 @@ function resetTimer(){
     interval = null;
     correctTime();
 }
-
-const title = document.querySelector(".title");
-const switchButton = document.getElementById("rest");
 
 // The Rest Mode On Function
 function restMode() {
@@ -96,15 +101,24 @@ function studyMode() {
     switchButton?.addEventListener("click", restMode);
 }
 
+// Switch Mode Function
+function switchMode() {
+  return isRestMode? studyMode() : restMode();
+}
+
 // Will active when the button is clicked
 if (start) start.addEventListener("click", startTimer);
 if (stop) stop.addEventListener("click", stopTimer);
 if (reset) reset.addEventListener("click", resetTimer);
-if (rest) rest.addEventListener("click", restMode);
+if (switchButton) {
+  isRestMode = false;
+  correctTime();
+  switchButton.addEventListener("click", restMode);
+}
 
-// =======================================================================
+// ======================================================================================================================
 // Task List Functinos
-// =======================================================================
+// ======================================================================================================================
 
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
@@ -315,6 +329,10 @@ document.addEventListener("click", (e) => {
     priorityOptions.classList.add("hidden");
   }
 });
+
+// ======================================================================================================================
+// Generate Repost Function
+// ======================================================================================================================
 
 document.getElementById('gen-report').addEventListener('click', async() => {
   const payload = {
