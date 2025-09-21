@@ -110,14 +110,14 @@ button{
     border-radius: 10px;
 }
 
-.task-app .toDoApp h2{
+.task-app.toDoApp h2{
     color: var(--text-color);
     display: flex;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.task-app .row{
+.task-app.toDoApp .row{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -128,7 +128,7 @@ button{
 }
 
 /* this selects all input elements */
-.task-app input{
+.task-app.toDoApp .row input{
     flex: 1;
     border: none;
     outline: none;
@@ -285,4 +285,35 @@ button{
     line-height: normal;
     font-size: 14px;
     color: gold;
+}
+
+.weekly-stats .row{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    background: #edeef0;
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.weekly-stats .field{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.weekly-stats input {
+    border: 1px solid rgba(0,0,0,0.08);
+    outline: none;
+    background: #fff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }

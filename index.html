@@ -98,9 +98,41 @@
                 <ul id="list-container"></ul>
             </div>
 
-            <p id="report-summary"></p>
-            <p id="report-quote"></p>
-            <button id="gen-report">Generate report</button>
+            <!-- Weekly Report -->
+            <section class="task-app toDoApp weekly-stats" style="margin-top:24px;">
+                <h2 class="title">Weekly Report</h2>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="r-name">Name</label>
+                        <input type="text" id="r-name" min="0">
+                    </div>
+
+                    <div class="field">
+                        <label for="r-time">Study Minutes</label>
+                        <input type="number" id="r-time" min="0">
+                    </div>
+
+                    <div class="field">
+                        <label for="r-rest">Rest Minutes</label>
+                        <input type="number" id="r-rest" min="0">
+                    </div>
+
+                    <div class="field">
+                        <label for="r-task">Task completed</label>
+                        <input type="number" id="r-task" min="0">
+                    </div>
+
+                    <div class="field">
+                        <label for="r-star">Stars</label>
+                        <input type="number" id="r-star" min="0">
+                    </div>
+                </div>
+
+                <button id="generate-report">Generate Report</button>
+                <p id="report-summary"></p>
+                <p id="report-quote"></p>
+            </section>
             
         </div>
         </main>
