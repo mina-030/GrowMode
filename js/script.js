@@ -26,8 +26,8 @@ const title = document.querySelector(".title");
 const alarmSound = new Audio('alarm.m4a');
 
 // Durations (seconds)
-const WORK_SECONDS = 1500; // 25 mins
-const REST_SECONDS = 300; // 5 mins
+const WORK_SECONDS = 1; // 25 mins
+const REST_SECONDS = 1; // 5 mins
 
 let isRestMode = false;
 let interval;
@@ -56,6 +56,9 @@ function startTimer(){
         if (timeLeft < 0) {
             clearInterval(interval);
             interval = null; //clear the interval reference
+            ensureCurrentWeek(); // auto input minutes to the report
+            if (isRestMode) incNum(REST_KEY, REST_MIN);
+            else            incNum(TIME_KEY, WORK_MIN);
             alarmSound.play();
             alert("Time's up!");
             switchMode();
@@ -123,7 +126,7 @@ if (switchButton) {
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 const dueInput = document.getElementById("due-date");
-const PRIORITY_WEIGHT = { urgent: 4, high: 3, medium: 2, low: 1}
+const PRIORITY_WEIGHT = { urgent: 4, high: 3, medium: 2, low: 1};
 
 function priorityToStars(p) {
   switch (p) {
@@ -331,25 +334,198 @@ document.addEventListener("click", (e) => {
 });
 
 // ======================================================================================================================
-// Generate Repost Function
+// Update Input Box For Weekly Report
 // ======================================================================================================================
 
-document.getElementById('gen-report').addEventListener('click', async() => {
+const NAME_KEY = "profileName";
+const TIME_KEY = "weekly_total_study_time";
+const REST_KEY = "weekly_total_rest";
+const TASK_KEY = "weekly_total_task";
+const STAR_KEY = "weekly_total_star";
+const WEEK_KEY = "weekly_week_id";
+
+// study/ rest time lengths
+const WORK_MIN = 25;
+const REST_MIN = 5;
+
+// Inputs (Weekly Report Section)
+const nameInput = document.getElementById("r-name");
+const timeInput = document.getElementById("r-time");
+const restInput = document.getElementById("r-rest");
+const taskInput = document.getElementById("r-task");
+const starInput = document.getElementById("r-star");
+
+// Report display + Button
+const genBtn = document.getElementById("generate-report");
+const summary = document.getElementById("report-summary");
+const quote = document.getElementById("report-quote");
+const BACKEND_URL = "http://127.0.0.1:8000/report";
+
+// ------------------------------
+// Week rollover
+
+function getWeekId(d = new Date()) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0 ,1));
+  const weekNo = Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
+  return `${t.getUTCFullYear()}-${String(weekNo).padStart(2, "0")}`;
+}
+
+function ensureCurrentWeek() {
+  const cur = getWeekId();
+  const saved = localStorage.getItem(WEEK_KEY);
+  if (cur !== saved) {
+    localStorage.setItem(WEEK_KEY, cur);
+    localStorage.setItem(TIME_KEY, "0");
+    localStorage.setItem(REST_KEY, "0");
+    localStorage.setItem(TASK_KEY, "0");
+    localStorage.setItem(STAR_KEY, "0");
+  }
+}
+ensureCurrentWeek();
+
+// -------------------------------
+// Small Storage Helper
+function getNum(key, def = 0) {
+  const v = parseInt(localStorage.getItem(key) || `${def}`, 10);
+  return Number.isFinite(v) ? v : def;
+}
+
+function setNum(key, val) {
+  localStorage.setItem(key, String(Math.max(0, val | 0)));
+  reflectInputsFromStorage();
+}
+
+function incNum(key, delta) {
+  setNum(key, getNum(key) + (delta | 0));
+}
+
+// -------------------------------
+// Reflect storage -> inputs
+function reflectInputsFromStorage() {
+  const defaultName = (document.getElementById("name")?.textContent || "Guest").trim();
+
+  if (nameInput) nameInput.value = localStorage.getItem(NAME_KEY) || defaultName;
+  if (timeInput) timeInput.value = getNum(TIME_KEY);
+  if (restInput) restInput.value = getNum(REST_KEY);
+  if (taskInput) taskInput.value = getNum(TASK_KEY);
+  if (starInput) starInput.value = getNum(STAR_KEY);
+}
+
+nameInput?.addEventListener("input", () => localStorage.setItem(NAME_KEY, nameInput.value.trim()));
+timeInput?.addEventListener("input", () => setNum(TIME_KEY, parseInt(timeInput.value || "0", 10) || 0));
+restInput?.addEventListener("input", () => setNum(REST_KEY, parseInt(restInput.value || "0", 10) || 0));
+taskInput?.addEventListener("input", () => setNum(TASK_KEY, parseInt(taskInput.value || "0", 10) || 0));
+starInput?.addEventListener("input", () => setNum(STAR_KEY, parseInt(starInput.value || "0", 10) || 0));
+
+// -------------------------------------
+// Auto-track: task and star
+// For Star:
+function readSelectedProiority() {
+  const chosen = priorityOptions?.querySelector('input[name="priority"]:checked');
+  return chosen?.value || null;
+}
+
+const _addTask = typeof addTask === "function" ? addTask : null;
+if (_addTask) {
+  addTask = function() {
+    const before = document.querySelectorAll("#list-container li").length;
+    _addTask();
+
+    const list = document.getElementById("list-container");
+    const li = list?.lastElementChild;
+    if (li && li.tagName === "LI") {
+      const level = readSelectedProiority();
+      if (level) {
+        li.dataset.priority = level;
+
+        // badge rendering
+        const badge = document.createElement("span");
+        badge.className = `badge stars-${level}`;
+        badge.textContent = level.toUpperCase();
+        li.appendChild(badge);
+      }
+    }
+
+    priorityOptions?.querySelectorAll('input[name="priority"]').forEach(inp => (inp.checked = false));
+
+    setTimeout(recomputeTaskAndStars, 0);
+  }
+}
+
+// When toggling or deleting tasks, recompute totals
+function recomputeTaskAndStars() {
+  const list = document.getElementById("list-container");
+  if (!list) return;
+
+  const checked = Array.from(list.querySelectorAll("li.checked"));
+  const completedCount = checked.length;
+
+  const totalStars = checked.reduce((sum, li) => {
+    const level = li.dataset.priority || "";
+    const w = PRIORITY_WEIGHT[level] || 0;
+    return sum + w;
+  }, 0);
+
+  setNum(TASK_KEY, completedCount);
+  setNum(STAR_KEY, totalStars);
+}
+
+// Hook the existing click handler area to update after toggles/deletes
+const listContainerEl = document.getElementById("list-container");
+if (listContainerEl) {
+  listContainerEl.addEventListener("click", () => {
+    setTimeout(recomputeTaskAndStars, 0);
+  });
+}
+// Also on load (for restored tasks)
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(recomputeTaskAndStars, 0);
+});
+
+// ==============================================================================================================================
+// Generate & show the report
+// ==============================================================================================================================
+async function generateWeeklyReport() {
+  ensureCurrentWeek();
+
   const payload = {
-    name: 'Mina',
-    total_time: 600,
-    total_rest: 120,
-    total_task: 12,
-    total_star: 20
+    name: (nameInput?.value || "Guest").trim(),
+    total_time: parseInt(timeInput?.value || "0", 10) || 0,
+    total_rest: parseInt(restInput?.value || "0", 10) || 0,
+    total_task: parseInt(taskInput?.value || "0", 10) || 0,
+    total_star: parseInt(starInput?.value || "0", 10) || 0,
   };
 
-  const res = await fetch('http://127.0.0.1:8000/report', {
-    method: 'POST',
-    headers: {'Content-Type' : 'application/json'},
-    body: JSON.stringify(payload)
-  });
+  const prev = genBtn.textContent;
+  genBtn.disabled = true;
+  genBtn.textContent = "Generating...";
+  if (summary) summary.textContent = "";
+  if (quote) quote.textContent = "";
 
-  const data = await res.json();
-  document.getElementById('report-summary').textContent = data.summary;
-  document.getElementById('report-quote').textContent = data.quote;
-});
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify(payload),
+    });
+    if(!res.ok) {
+      const t = await res.text();
+      throw new Error(`HTTP ${res.status}: ${t}`);
+    }
+
+    const data = await res.json();
+    if (summary) summary.textContent = data.summary || "No summary returned"
+    if (quote)   quote.textContent   = data.quote ? `“${data.quote}”` : "";
+  } catch (err) {
+    if (summary) summary.textContent = "Could not generate the report.";
+    if (quote)   quote.textContent   = String(err);
+  } finally {
+    genBtn.disabled = false;
+    genBtn.textContent = prev;
+  }
+}
+
+genBtn?.addEventListener("click", generateWeeklyReport);

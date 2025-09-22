@@ -95,6 +95,6 @@ async def weekly_report(body: WeeklyInput):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["POST"],
+    allow_methods=["POST", "OPTIONS"],
     allow_headers=["*"],
 )
